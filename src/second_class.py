@@ -7,18 +7,17 @@ class CompareData:
         pd = ProcessData("TransEsmeraldas_Airtable_Feb2025_t.xlsx", "TransEsmeraldas_Novo_Feb2025_t.xlsx")
         
         # validar bnc duplicados en ambos archivos y obtener lista sin duplicados:
-        self.dup_airtable, self.bcn_airtable = self.duplicates(pd.bnc1)  
-        self.dup_novo, self.bcn_novo = self.duplicates(pd.bnc2)
+        self.dup_airtable, self.bcn_airtable = self.duplicates(pd.bnc_air)  
+        self.dup_novo, self.bcn_novo = self.duplicates(pd.bnc_novo)
 
         # compare de datos:
         self.data_match, self.not_in_novo, self.not_in_air, self.unmatch_data = self.data_compare()
 
         # dataframe ?:
-        self.air_dataframe = self.ubicar_dataframe(self.bcn_airtable, pd.cut_dictdata1) 
-        self.novo_dataframe = self.ubicar_dataframe(self.bcn_novo, pd.cut_dictdata2)
+        self.dta = self.ubicar_dataframe(self.bcn_airtable, pd.cut_airDict)
 
     @staticmethod
-    def duplicates(dic_data):
+    def duplicates(data):
         _set = set()
         dup = []
 
@@ -55,15 +54,13 @@ class CompareData:
     
     @staticmethod
     def ubicar_dataframe(bnc_list, bnc_dict):
-        bnc_dtfr = []
-        bn_dtfr = []
-        for bnc in bnc_list:
-            for dic in bnc_dict: 
-                if bnc == dic[bnc] or bnc in dic[bnc]:
-                    bnc_dtfr.append(dic['bnc']), bn_dtfr.append(dic['bn'])
-                    break
-
-        dataframe = {'bnc': bnc_dtfr, 'bn': bn_dtfr}
+        values_list = []
+        bnc_values = []
+        bn_values = []
+        for key in bnc_dict:
+            if key in bnc_list:
+                bnc_values.append(bnc_dict[key]['bnc']), bn_values.append(bnc_dict[key]['bn'])
+        dataframe = {'bnc': bnc_values, 'bn': bn_values} 
         return dataframe
 
     
@@ -73,10 +70,4 @@ class DeployData():
         
 
 cpr = CompareData()
-# print(cpr.dup, cpr.nodup)
-# print(cpr.dup_airtable, cpr.dup_novo)
-# print(cpr.data_match)
-# print(cpr.not_in_air)
-# print(cpr.not_in_novo)
-# print(cpr.unmatch_data)
-print(cpr.novo_dataframe)
+print(pd.DataFrame(cpr.dta))
